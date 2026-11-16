@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#f3edff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -85,6 +85,33 @@ button.is-clicked{animation:button-click .24s ease-out}
 /* iPhone Safari: prevent double-tap zoom on app controls while preserving page scrolling/pinch zoom */
 html,body{touch-action:pan-y}
 button,a,input,select,textarea,[role="button"]{touch-action:manipulation}
+
+
+/* iPhone Safari hardening: block zoom gestures and long-press selection/callouts */
+html,body{
+  touch-action:pan-y;
+  -webkit-text-size-adjust:100%;
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+}
+*,*::before,*::after{
+  -webkit-touch-callout:none;
+}
+button,a,[role="button"],img,svg{
+  -webkit-user-select:none;
+  user-select:none;
+  -webkit-touch-callout:none;
+  -webkit-user-drag:none;
+  touch-action:pan-y;
+}
+input,textarea,select,[contenteditable="true"]{
+  -webkit-user-select:text;
+  user-select:text;
+  -webkit-touch-callout:default;
+  touch-action:pan-y;
+}
+img{pointer-events:none}
 
 </style>
 </head>
@@ -190,6 +217,21 @@ document.addEventListener("click",e=>{
 
 
 // Hide the browser context menu inside the app.
+// iOS Safari: block pinch/double-finger zoom and long-press text selection/callouts.
+const isEditableTarget = target => !!target.closest('input,textarea,select,[contenteditable="true"]');
+["gesturestart","gesturechange","gestureend"].forEach(type=>{
+ document.addEventListener(type,event=>event.preventDefault(),{passive:false});
+});
+document.addEventListener("touchmove",event=>{
+ if(event.touches && event.touches.length>1) event.preventDefault();
+},{passive:false});
+document.addEventListener("selectstart",event=>{
+ if(!isEditableTarget(event.target)) event.preventDefault();
+});
+document.addEventListener("dragstart",event=>event.preventDefault());
+document.addEventListener("copy",event=>{
+ if(!isEditableTarget(event.target)) event.preventDefault();
+});
 document.addEventListener("contextmenu",event=>event.preventDefault());
 
 load();let now=new Date();$("month").value=now.getMonth()+1;render();if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
