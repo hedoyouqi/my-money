@@ -1,0 +1,9 @@
+{
+  "name": "MY MONEY 나의 월 지출",
+  "short_name": "MY MONEY",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f0ff",
+  "theme_color": "#f3edff",
+  "lang": "ko"
+}
