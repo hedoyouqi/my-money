@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <meta name="theme-color" content="#f3edff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -80,6 +80,11 @@ button.is-clicked{animation:button-click .24s ease-out}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+
+/* iPhone Safari: prevent double-tap zoom on app controls while preserving page scrolling/pinch zoom */
+html,body{touch-action:pan-y}
+button,a,input,select,textarea,[role="button"]{touch-action:manipulation}
 
 </style>
 </head>
@@ -182,6 +187,10 @@ document.addEventListener("click",e=>{
  button.classList.add("is-clicked");
  button.addEventListener("animationend",()=>button.classList.remove("is-clicked"),{once:true});
 });
+
+
+// Hide the browser context menu inside the app.
+document.addEventListener("contextmenu",event=>event.preventDefault());
 
 load();let now=new Date();$("month").value=now.getMonth()+1;render();if("serviceWorker"in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("./sw.js").catch(()=>{});
 </script></body></html>
